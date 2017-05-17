@@ -4,7 +4,7 @@
 // Left Wheel
 #define MOTOR2PIN1 24
 #define MOTOR2PIN2 25
-int turnDelay = 7000;   // obviously just estimated time
+int turnDelay = 3000;   // obviously just estimated time
 
 void setup() {
   Serial.begin(1000000);
@@ -21,8 +21,12 @@ void setup() {
 }
 
 void loop() {
-//    serialMode();
-    driveMode();
+  Serial.println("Loop Begin");
+  //  serialMode();
+//  driveMode
+  testDriver();
+  Serial.println("Loop End");
+  delay(500);
 }
 
 void serialMode() {
@@ -43,11 +47,11 @@ void serialMode() {
         Serial.println("Backward");
         break;
       case '3':
-        turnLeft90();
+        wheelRight(1);  wheelLeft(2);
         Serial.println("Turn Left");
         break;
       case '4':
-        turnRight90();
+        wheelRight(2);  wheelLeft(1);
         Serial.println("Turn Right");
         break;
       case '5':
@@ -67,9 +71,8 @@ void serialMode() {
 }
 
 void driveMode() {
-  //char seq[7] = "0124356";
-  char seq[7] = "1111111
-  ";
+  char seq[7] = "0123456";
+  //  char seq[7] = "1111111";
   for (int i = 0; i < 7; i++) {
     char cmd = seq[i];
     switch (cmd) {
@@ -83,10 +86,10 @@ void driveMode() {
         wheelRight(2);  wheelLeft(2);
         break;
       case '3':
-        turnLeft90();
+        wheelRight(1);  wheelLeft(2);
         break;
       case '4':
-        turnRight90();
+        wheelRight(2);  wheelLeft(1);
         break;
       case '5':
         wheelRight(0);  wheelLeft(1);
@@ -98,11 +101,62 @@ void driveMode() {
         wheelRight(0);  wheelLeft(0);
         break;
     }
-    int ti = millis();
+    unsigned long ti = millis();
     while (millis() - ti < turnDelay) {
       // do nothing, go forard
     }
     wheelRight(0);  wheelLeft(0);
+  }
+}
+
+void testDriver() {
+  if (Serial.available() > 0) {
+    Serial.println("TD");
+
+    char seq[7] = "0123456";
+    for (int i = 0; i < 7; i++) {
+      char cmd = seq[i];
+      switch (cmd) {
+        case '0':
+          wheelRight(0);  wheelLeft(0);
+          Serial.println("Stop");
+          break;
+        case '1':
+          wheelRight(1);  wheelLeft(1);
+          Serial.println("Forward");
+          break;
+        case '2':
+          wheelRight(2);  wheelLeft(2);
+          Serial.println("Backward");
+          break;
+        case '3':
+          wheelRight(1);  wheelLeft(2);
+          Serial.println("Turn Left");
+          break;
+        case '4':
+          wheelRight(2);  wheelLeft(1);
+          Serial.println("Turn Right");
+          break;
+        case '5':
+          wheelRight(0);  wheelLeft(1);
+          Serial.println("Left Wheel Only");
+          break;
+        case '6':
+          wheelRight(1);  wheelLeft(0);
+          Serial.println("Right Wheel Only");
+          break;
+        default:
+          wheelRight(0);  wheelLeft(0);
+          Serial.println("Stop");
+          break;
+      }
+      unsigned long ti = millis();
+      while (millis() - ti < turnDelay) {
+        // do nothing, go forard
+      }
+      //      delay(turnDelay);
+      wheelRight(0);  wheelLeft(0);
+    }
   }
 }
 
